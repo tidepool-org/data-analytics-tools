@@ -23,17 +23,17 @@ with open("README.md", "r") as fh:
 version_string = "v0.0.1"
 
 setuptools.setup(
-    name="tidals",
+    name="data-analytics-tools",
     version=version_string,
     author="Ed Nykaza",
     author_email="ed@tidepool.org",
     description="Tidepool Data Analysis Tools",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/tidepool-org/data-analytics/tree/master/tidepool-analysis-tools",
+    url="https://github.com/tidepool-org/data-analytics-tools",
     packages=setuptools.find_packages(),
     download_url=(
-        'https://github.com/tidepool-org/data-analytics/tarball/' + version_string
+        'https://github.com/tidepool-org/data-analytics-tools/tarball/' + version_string
     ),
     classifiers=[
         'Development Status :: 3 - Alpha',

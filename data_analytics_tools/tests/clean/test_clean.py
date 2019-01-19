@@ -1,18 +1,9 @@
 
-from tidals.clean.clean import remove_duplicates, round_time, flatten_json, remove_brackets
+from data_analytics_tools.clean.clean import remove_duplicates, round_time
 
 import pandas as pd
 from pandas.util import testing as tm
 import pytest
-
-def test_remove_brackets():
-    raw_data = [["[{'code': 'final-basal/fabricated-from-schedule'}]", "jsonfield"],
-          ["BasicString", "textfield"]]
-
-    raw_df = pd.DataFrame(raw_data, columns=['testcolumn', 'type'])
-    clean_df = remove_brackets(raw_df, 'testcolumn')
-    pd.melt
-    print(clean_df)
 
 
 def test_remove_duplicates(valid_df):

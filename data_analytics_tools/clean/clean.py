@@ -84,7 +84,7 @@ def round_time(
 
 
 # OTHER
-def tempRemoveFields(df, removeFields):
+def temp_remove_fields(df, removeFields):
     tempRemoveFields = list(set(df) & set(removeFields))
     tempDf = df[tempRemoveFields]
     df = df.drop(columns=tempRemoveFields)
@@ -92,9 +92,9 @@ def tempRemoveFields(df, removeFields):
     return df, tempDf
 
 
-def flattenJson(df, doNotFlattenList):
+def flatten_json(df, doNotFlattenList):
     # remove fields that we don't want to flatten
-    df, hold_data = tempRemoveFields(df, doNotFlattenList)
+    df, hold_data = temp_remove_fields(df, doNotFlattenList)
 
     # get a list of data types of column headings
     column_headings = list(df)

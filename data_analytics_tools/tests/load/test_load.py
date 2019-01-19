@@ -1,5 +1,5 @@
 
-from tidals.load.load import load_data
+from data_analytics_tools.load.load import load_data
 import pandas as pd
 
 
