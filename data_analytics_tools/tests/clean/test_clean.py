@@ -1,10 +1,9 @@
 
-from data_analytics_tools.clean.clean import remove_duplicates, round_time
+from data_analytics_tools.clean.clean import removeDuplicates, round_time, removeInvalidCgmValues
 
 import pandas as pd
 from pandas.util import testing as tm
 import pytest
-
 
 def test_remove_duplicates(valid_df):
 
@@ -21,9 +20,10 @@ def test_remove_duplicates(valid_df):
 
     duplicated_df = pd.DataFrame(duplicated_data, columns=['userID', 'studyID',"getData.response1", "getData.response2",
                                                            "time", "roundedTime"])
+
     pandas_drop_df = duplicated_df.drop_duplicates('time')
 
-    clean_df, duplicate_count = remove_duplicates(duplicated_df, duplicated_df["time"])
+    clean_df, duplicate_count = removeDuplicates(duplicated_df, "time")
 
     tm.assert_frame_equal(valid_df, clean_df)
     tm.assert_frame_equal(valid_df, pandas_drop_df)
@@ -88,12 +88,46 @@ def test_round_invalid_time():
 
     assert("day is out of range for month" == excinfo.value.args[0])
 
+
+def test_removeInvalidCgmValues_less_than_38():
+    """
+    {"deviceTime": "2019-01-20T09:51:08", "id": "b12854e060f9d4abf08db3ecc446fdfc",
+     "payload": {"realTimeValue": 137, "systemTime": "2019-01-20T14:51:08Z", "transmitterId": "41TU3L",
+                 "transmitterTicks": 3760359, "trend": "flat", "trendRate": 0.3, "trendRateUnits": "mg/dL/min"},
+     "time": "2019-01-20T14:51:08Z", "timezoneOffset": -300, "type": "cbg", "units": "mmol/L",
+     "uploadId": "3f434e5abc1e456f807edf5c7c25f738", "value": 7.60452}
+     """
+    # remove values < 38 and > 402 mg/dL
+    raw_data = [["cbg", 2.109284236597302]]
+    raw_df = pd.DataFrame(raw_data, columns=['type', 'value'])
+    df, nRemoved = removeInvalidCgmValues(raw_df)
+
+    assert(nRemoved == 1)
+
+def test_removeInvalidCgmValues_greater_than_402():
+    """
+    {"deviceTime": "2019-01-20T09:51:08", "id": "b12854e060f9d4abf08db3ecc446fdfc",
+     "payload": {"realTimeValue": 137, "systemTime": "2019-01-20T14:51:08Z", "transmitterId": "41TU3L",
+                 "transmitterTicks": 3760359, "trend": "flat", "trendRate": 0.3, "trendRateUnits": "mg/dL/min"},
+     "time": "2019-01-20T14:51:08Z", "timezoneOffset": -300, "type": "cbg", "units": "mmol/L",
+     "uploadId": "3f434e5abc1e456f807edf5c7c25f738", "value": 7.60452}
+     """
+    # remove values < 38 and > 402 mg/dL
+    raw_data = [["cbg", 22.314006924003048]]
+    raw_df = pd.DataFrame(raw_data, columns=['type', 'value'])
+    df, nRemoved = removeInvalidCgmValues(raw_df)
+
+    assert(nRemoved == 1)
+
+
+"""  
 @pytest.mark.skip(reason='need a valid dataframe example')
 def test_flatten_json(current_path_clean):
     df = pd.read_json(current_path_clean + "/example_data.json")
     flattened_df = flatten_json(df)
 
     print(flattened_df)
+"""
 
 
 
