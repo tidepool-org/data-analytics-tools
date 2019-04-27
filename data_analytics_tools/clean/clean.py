@@ -20,6 +20,18 @@ import numpy as np
 #removeCgmDuplicates
 #largeTimezoneOffsetCorrection
 
+
+#removeNegativeDurations (Duplicate with differences)
+#removeInvalidCgmValues
+#removeDuplicates
+#remove_duplicates (Major Difference between the 2 projects)
+#removeCgmDuplicates
+#largeTimezoneOffsetCorrection
+
+#NEED DATA
+#tslimCalibrationFix (Duplicate with differences)
+#largeTimezoneOffsetCorrection
+
 ##??
 #convertDeprecatedTimezoneToAlias
 
@@ -33,49 +45,7 @@ def removeDuplicates(df, criteriaDF):
 
     return df, nDuplicatesRemoved
 
-""" 
-def remove_duplicates(df, upload_data):
 
-    df = df.copy()
-    upload_data = upload_data.copy()
-
-    # Sort uploads by oldest uploads first
-    upload_data = upload_data.sort_values(ascending=True, by="est.localTime")
-
-    # Create an ordered dictionary (i.e. uploadId1 = 1, ,uploadId2 = 2, etc)
-    upload_order_dict = dict(
-                            zip(upload_data["uploadId"],
-                                list(range(1, 1+len(upload_data.uploadId.unique())))
-                                )
-                            )
-
-    # Sort data by upload order from the ordered dictionary
-    # df["upload_order"] = df["uploadId"].copy()
-    df["upload_order"] = df["uploadId"].map(upload_order_dict)
-    df = df.sort_values(ascending=True, by="upload_order")
-
-    # Replace any healthkit data deviceTimes (NaN) with a unique id
-    # This prevents healthkit data with blank deviceTimes from being removed
-    if("deviceTime" in list(df)):
-        df.deviceTime.fillna(df.id, inplace=True)
-
-    # Drop duplicates using est.localTime+value, time(utc time)+value,
-    # deviceTime+value, and est.localTime alone
-    # The last entry is kept, which contains the most recent upload data
-    values_before_removal = len(df.value)
-    df = df.drop_duplicates(subset=["est.localTime", "value"], keep="last")
-    df = df.drop_duplicates(subset=["time", "value"], keep="last")
-    if("deviceTime" in list(df)):
-        df = df.drop_duplicates(subset=["deviceTime", "value"], keep="last")
-    df = df.drop_duplicates(subset=["est.localTime"], keep="last")
-    values_after_removal = len(df.value)
-    duplicates_removed = values_before_removal-values_after_removal
-
-    # Re-sort the data by est.localTime
-    df = df.sort_values(ascending=True, by="est.localTime")
-
-    return df, duplicates_removed
-"""
 
 def round_time(df, timeIntervalMinutes=5, timeField="time", roundedTimeFieldName="roundedTime", startWithFirstRecord=True,
                verbose=False):
@@ -270,9 +240,7 @@ def convertDeprecatedTimezoneToAlias(df, tzAlias):
 def largeTimezoneOffsetCorrection(df):
 
     while ((df.timezoneOffset > 840).sum() > 0):
-        df.loc[df.timezoneOffset > 840, ["conversionOffset"]] = \
-            df.loc[df.timezoneOffset > 840, ["conversionOffset"]] - \
-            (1440 * 60 * 1000)
+        df.loc[df.timezoneOffset > 840, ["conversionOffset"]] = df.loc[df.timezoneOffset > 840, ["conversionOffset"]] - (1440 * 60 * 1000)
 
         df.loc[df.timezoneOffset > 840, ["timezoneOffset"]] = \
             df.loc[df.timezoneOffset > 840, ["timezoneOffset"]] - 1440
@@ -289,7 +257,7 @@ def largeTimezoneOffsetCorrection(df):
 
 
 
-###################################### what was existing ###################################################
+###################################### was existing ###################################################
 
 
 
@@ -398,3 +366,51 @@ def flatten_json(df, doNotFlattenList):
     df.sort_index(axis=1, inplace=True)
 
     return df
+
+
+
+
+""" 
+##Is this a duplicate funciton?
+def remove_duplicates(df, upload_data):
+
+    df = df.copy()
+    upload_data = upload_data.copy()
+
+    # Sort uploads by oldest uploads first
+    upload_data = upload_data.sort_values(ascending=True, by="est.localTime")
+
+    # Create an ordered dictionary (i.e. uploadId1 = 1, ,uploadId2 = 2, etc)
+    upload_order_dict = dict(
+                            zip(upload_data["uploadId"],
+                                list(range(1, 1+len(upload_data.uploadId.unique())))
+                                )
+                            )
+
+    # Sort data by upload order from the ordered dictionary
+    # df["upload_order"] = df["uploadId"].copy()
+    df["upload_order"] = df["uploadId"].map(upload_order_dict)
+    df = df.sort_values(ascending=True, by="upload_order")
+
+    # Replace any healthkit data deviceTimes (NaN) with a unique id
+    # This prevents healthkit data with blank deviceTimes from being removed
+    if("deviceTime" in list(df)):
+        df.deviceTime.fillna(df.id, inplace=True)
+
+    # Drop duplicates using est.localTime+value, time(utc time)+value,
+    # deviceTime+value, and est.localTime alone
+    # The last entry is kept, which contains the most recent upload data
+    values_before_removal = len(df.value)
+    df = df.drop_duplicates(subset=["est.localTime", "value"], keep="last")
+    df = df.drop_duplicates(subset=["time", "value"], keep="last")
+    if("deviceTime" in list(df)):
+        df = df.drop_duplicates(subset=["deviceTime", "value"], keep="last")
+    df = df.drop_duplicates(subset=["est.localTime"], keep="last")
+    values_after_removal = len(df.value)
+    duplicates_removed = values_before_removal-values_after_removal
+
+    # Re-sort the data by est.localTime
+    df = df.sort_values(ascending=True, by="est.localTime")
+
+    return df, duplicates_removed
+"""

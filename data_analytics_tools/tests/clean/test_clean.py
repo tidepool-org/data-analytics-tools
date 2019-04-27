@@ -1,9 +1,11 @@
 
-from data_analytics_tools.clean.clean import removeDuplicates, round_time, removeInvalidCgmValues
+from data_analytics_tools.clean.clean import removeDuplicates, round_time, removeInvalidCgmValues, \
+    removeNegativeDurations_EDS, removeNegativeDurations_JASONS, removeCgmDuplicates, largeTimezoneOffsetCorrection
 
 import pandas as pd
 from pandas.util import testing as tm
 import pytest
+import tidals
 
 def test_remove_duplicates(valid_df):
 
@@ -118,6 +120,49 @@ def test_removeInvalidCgmValues_greater_than_402():
     df, nRemoved = removeInvalidCgmValues(raw_df)
 
     assert(nRemoved == 1)
+
+def test_removeCgmDuplicates():
+    """
+    {"deviceTime":"2019-01-20T09:51:08","id":"b12854e060f9d4abf08db3ecc446fdfc",
+    "payload":{"realTimeValue":137,"systemTime":"2019-01-20T14:51:08Z","transmitterId":"41TU3L",
+    "transmitterTicks":3760359,"trend":"flat","trendRate":0.3,"trendRateUnits":"mg/dL/min"},"time":"2019-01-20T14:51:08Z",
+    "timezoneOffset":-300,"type":"cbg","units":"mmol/L","uploadId":"3f434e5abc1e456f807edf5c7c25f738","value":7.60452},
+     """
+
+    raw_data = [["cbg", "2019-01-20T09:51:08", "testvalue", "2019-01-20T09:51:08"],
+                ["cbg", "2019-01-20T09:51:08", "testvalue", "2019-01-20T08:51:09"]]
+    raw_df = pd.DataFrame(raw_data, columns=['type', 'deviceTime', 'value', 'uploadTime'])
+    df, nRemoved = removeCgmDuplicates(raw_df, "deviceTime")
+
+    assert(nRemoved == 1)
+
+
+def test_removeNegativeDurations():
+    raw_data = [["cbg", 22.314006924003048, -1961000], ["cbg", 22.314006924003048, 1961000]]
+    raw_df = pd.DataFrame(raw_data, columns=['type', 'value', 'duration'])
+    df, removed_count = removeNegativeDurations_EDS(raw_df)
+    #df = removeNegativeDurations_JASONS(raw_df)
+
+    assert(raw_df.shape[0] == 2)
+    assert(df.shape[0] == 1)
+    assert(removed_count == 1)
+
+
+@pytest.mark.skip(reason='need a valid dataframe example')
+def test_largeTimezoneOffsetCorrection():
+
+    raw_data = [["cbg", 22.314006924003048, -1961000, 54, 4], ["cbg", 22.314006924003048, 850, 1]]
+    raw_df = pd.DataFrame(raw_data, columns=['type', 'value', 'timezoneOffset', 'conversionOffset'])
+    test = raw_df.sum()
+
+    df, removed_count = largeTimezoneOffsetCorrection(raw_df)
+    #df = removeNegativeDurations_JASONS(raw_df)
+
+    assert(raw_df.shape[0] == 2)
+    assert(df.shape[0] == 1)
+    assert(removed_count == 1)
+
+
 
 
 """  
