@@ -5,7 +5,7 @@ from data_analytics_tools.clean.clean import removeDuplicates, round_time, remov
 import pandas as pd
 from pandas.util import testing as tm
 import pytest
-import tidals
+
 
 def test_remove_duplicates(valid_df):
 
