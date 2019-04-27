@@ -23,7 +23,7 @@ with open("README.md", "r") as fh:
 version_string = "v0.0.1"
 
 setuptools.setup(
-    name="data-analytics-tools",
+    name="tidals",
     version=version_string,
     author="Ed Nykaza",
     author_email="ed@tidepool.org",
