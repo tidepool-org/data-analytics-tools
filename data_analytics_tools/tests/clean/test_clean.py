@@ -80,7 +80,7 @@ def test_round_invalid_date():
     with pytest.raises(ValueError) as excinfo:
         round_time(raw_df)
 
-    assert("day is out of range for month" == excinfo.value.args[0])
+    assert("day is out of range for month: %s" == excinfo.value.args[0])
 
 def test_round_invalid_time():
     raw_data = [["hhawe", "AB8769", "newyear", "response2", "2018-11-31 25:01:10"]]
@@ -88,7 +88,7 @@ def test_round_invalid_time():
     with pytest.raises(ValueError) as excinfo:
         round_time(raw_df)
 
-    assert("day is out of range for month" == excinfo.value.args[0])
+    assert("day is out of range for month: %s" == excinfo.value.args[0])
 
 
 def test_removeInvalidCgmValues_less_than_38():
