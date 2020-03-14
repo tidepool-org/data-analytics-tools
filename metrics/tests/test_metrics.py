@@ -1,14 +1,13 @@
 import pandas as pd
-from pandas.util import testing as tm
 import pytest
-import numpy as np
 from metrics.metrics import percent_values_by_range, percent_time_in_range
 import datetime
-""" 
+
 def test_calculation():
-    percent = percent_values_by_range(get_values(), 100, 0)
+    pd_values = get_values()
+    percent = percent_values_by_range(pd_values.to_numpy(), 100, 0)
     assert 22.0 == percent
-    
+
 def test_invalid_lower_number():
     with pytest.raises(Exception) as excinfo:
         percent = percent_values_by_range(get_values(), -1, 0)
@@ -30,10 +29,11 @@ def test_lower_number_highjer_than_upper_number():
         percent = percent_values_by_range(get_values(), 100, 20)
     assert "lower threshold is higher than the upper threshold." in str(excinfo.value)
 
-"""
+ 
 def test_percent_time_in_range():
     percent = percent_time_in_range(get_date_values(), 100, 150)
     assert 40 == percent
+
 
 
 #100 values

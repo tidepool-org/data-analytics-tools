@@ -1,7 +1,5 @@
-import pandas as pd
-from typing import Dict, Tuple, Sequence
 import numpy as np
-import datetime
+
 
 def percent_values_by_range(values, lower_threshold: int, upper_threshold: int):
     """
@@ -9,7 +7,7 @@ def percent_values_by_range(values, lower_threshold: int, upper_threshold: int):
         The lower and upper values will be included in the range to calculate on.
 
         Arguments:
-        values -- Panda Dataframe with a column named values that contains a list of bg values.
+        values -- numpy array contains a list of bg values.
         lower_threshold -- The the lower value in the range to calculate on.
         upper_threshold -- The the upper value in the range to calculate on.
 
@@ -17,10 +15,8 @@ def percent_values_by_range(values, lower_threshold: int, upper_threshold: int):
         Percent value
     """
     calc_low_thresh, calc_upper_thresh = _validate_input(lower_threshold, upper_threshold)
-    values_list = values['values'].tolist()
-    set_length = float(len(values_list))
-    match_length = len([i for i in values_list  if  i <= calc_upper_thresh and i >= calc_low_thresh ])
-    return round(match_length / set_length * 100, 2)
+    results = round(np.where((values <= calc_upper_thresh) & (values >= calc_low_thresh), 1, 0).sum()/values.size*100, 2)
+    return results
 
 
 def percent_time_in_range(values, lower_threshold: int, upper_threshold: int):
