@@ -4,6 +4,18 @@ import numpy as np
 import datetime
 
 def percent_values_by_range(values, lower_threshold: int, upper_threshold: int):
+    """
+        Calculate the percent of values that match has a bg within the lower and upper threshold.
+        The lower and upper values will be included in the range to calculate on.
+
+        Arguments:
+        values -- Panda Dataframe with a column named values that contains a list of bg values.
+        lower_threshold -- The the lower value in the range to calculate on.
+        upper_threshold -- The the upper value in the range to calculate on.
+
+        Output:
+        Percent value
+    """
     calc_low_thresh, calc_upper_thresh = _validate_input(lower_threshold, upper_threshold)
     values_list = values['values'].tolist()
     set_length = float(len(values_list))
@@ -12,6 +24,19 @@ def percent_values_by_range(values, lower_threshold: int, upper_threshold: int):
 
 
 def percent_time_in_range(values, lower_threshold: int, upper_threshold: int):
+    """
+        Calculate the number of minutes the bg was within the lower and upper range.
+        The lower and upper values will be included in the range to calculate on.
+
+        Arguments:
+        values -- Panda Dataframe with a column named values that contains a list of bg values and a column named date
+        containing a python datetime value.
+        lower_threshold -- The the lower value in the range to calculate on.
+        upper_threshold -- The the upper value in the range to calculate on.
+
+        Output:
+        Percent value
+    """
     calc_low_thresh, calc_upper_thresh = _validate_input(lower_threshold, upper_threshold)
     #pd.to_datetime(values['date'], format='%m/%d/%Y %H:%M:%S')
 
@@ -25,8 +50,7 @@ def percent_time_in_range(values, lower_threshold: int, upper_threshold: int):
     hit = False
     for i in values_sorted.index:
         value = values_sorted.loc[i, 'values']
-        date_time_str = values_sorted.loc[i, 'date']
-        date = datetime.datetime.strptime(date_time_str, '%m/%d/%Y %H:%M:%S')
+        date = values_sorted.loc[i, 'date']
         if   value <= calc_upper_thresh and value >= calc_low_thresh:
             match_length += 1
             hit = True
