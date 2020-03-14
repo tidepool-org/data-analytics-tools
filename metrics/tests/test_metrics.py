@@ -1,5 +1,6 @@
 import pandas as pd
 import pytest
+import numpy as np
 from metrics.metrics import percent_values_by_range, percent_time_in_range
 import datetime
 
