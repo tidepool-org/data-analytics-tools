@@ -1,10 +1,11 @@
 import pandas as pd
 import pytest
 import numpy as np
-from metrics.metrics import percent_values_by_range, percent_time_in_range, avg_glucose, std_deviation
+from metrics.metrics import percent_values_by_range, percent_time_in_range, \
+    avg_glucose, std_deviation, cv_of_glucose
 import datetime
 
-
+""" 
 def test_calculation():
     pd_values = get_values()
     percent = percent_values_by_range(pd_values.to_numpy(), 100, 0)
@@ -35,7 +36,7 @@ def test_lower_number_highjer_than_upper_number():
 def test_percent_time_in_range():
     #df = (df.assign(delta=df.sort_values(['ts']).groupby(['url', 'service']).diff(1)))
     percent = percent_time_in_range(get_date_values(), 100, 150)
-    assert 40 == percent
+    assert  percent == 40
 
 
 def test_percent():
@@ -54,15 +55,21 @@ def test_percent():
 def test_avg_glucose():
     pd_values = get_values()
     average = avg_glucose(pd_values.to_numpy())
-    assert 86.48 == average
+    assert  average == 86.48 
 
 
 def test_std_deviation():
     pd_values = get_values()
     std = std_deviation(pd_values.to_numpy())
-    assert 11.90 == std
+    assert  std == 11.90
+    
 
+"""
 
+def test_cv_of_glucose():
+    pd_values = get_values()
+    std = cv_of_glucose(pd_values.to_numpy())
+    assert std == 13.76
 
 #100 values
 def get_values():

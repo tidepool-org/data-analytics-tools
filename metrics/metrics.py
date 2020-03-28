@@ -1,6 +1,22 @@
 import numpy as np
 
 
+def cv_of_glucose(values):
+    """
+        Calculate the average within a set of glucose values
+
+        Arguments:
+        values -- numpy array contains a list of bg values.
+
+        Output: Calculated Average
+    """
+    std_dev = std_deviation(values)
+    avg_glu = avg_glucose(values)
+    return round(std_dev/avg_glu * 100, 2)
+
+#For example, if the SD is 50 mg/dl, and the average glucose is 150 mg/dl,
+# then you divide 50 by 150, multiply by 100, and you get a CV of 33%.
+
 
 def avg_glucose(values):
     """
