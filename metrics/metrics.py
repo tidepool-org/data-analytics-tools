@@ -1,6 +1,29 @@
 import numpy as np
 
 
+
+def avg_glucose(values):
+    """
+        Calculate the average within a set of glucose values
+
+        Arguments:
+        values -- numpy array contains a list of bg values.
+
+        Output: Calculated Average
+    """
+    return round(np.average(values), 2)
+
+def std_deviation(values):
+    """
+            Calculate the standard deviation within a set of glucose values
+
+            Arguments:
+            values -- numpy array contains a list of bg values.
+
+            Output: Calculated standard deviation
+        """
+    return round(np.std(values), 2)
+
 def percent_values_by_range(values, lower_threshold: int, upper_threshold: int):
     """
         Calculate the percent of values that match has a bg within the lower and upper threshold.
@@ -34,6 +57,14 @@ def percent_time_in_range(values, lower_threshold: int, upper_threshold: int):
         Percent value
     """
     calc_low_thresh, calc_upper_thresh = _validate_input(lower_threshold, upper_threshold)
+    values_sorted = values.sort_values(by='date').reindex()
+    date_df = values_sorted['date']
+
+    terst_dif = date_df.diff()
+    print("stop")
+
+    #1. get diff between previous record
+    #2. if in range set number.
     #pd.to_datetime(values['date'], format='%m/%d/%Y %H:%M:%S')
 
     from_date = None

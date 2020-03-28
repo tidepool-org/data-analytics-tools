@@ -1,8 +1,9 @@
 import pandas as pd
 import pytest
 import numpy as np
-from metrics.metrics import percent_values_by_range, percent_time_in_range
+from metrics.metrics import percent_values_by_range, percent_time_in_range, avg_glucose, std_deviation
 import datetime
+
 
 def test_calculation():
     pd_values = get_values()
@@ -30,10 +31,36 @@ def test_lower_number_highjer_than_upper_number():
         percent = percent_values_by_range(get_values(), 100, 20)
     assert "lower threshold is higher than the upper threshold." in str(excinfo.value)
 
- 
+
 def test_percent_time_in_range():
+    #df = (df.assign(delta=df.sort_values(['ts']).groupby(['url', 'service']).diff(1)))
     percent = percent_time_in_range(get_date_values(), 100, 150)
     assert 40 == percent
+
+
+def test_percent():
+    low_thresh = pd.date_range('2015-02-23', periods=5, freq='T')
+    value = pd.date_range('2015-02-24', periods=5, freq='T')
+    upper_thresh = pd.date_range('2015-02-25', periods=5, freq='T')
+    df = pd.DataFrame({'low_thresh': low_thresh, 'upper_thresh': upper_thresh, 'value': value})
+    print(df)
+    print(df.info())
+    df['difference'] = 'nan'
+    df['difference'][(df['value'] > df['low_thresh']) & (df['upper_thresh'] > df['value'])] = df['upper_thresh'] - \
+                                                                                              df['low_thresh']
+    print(df)
+    
+    
+def test_avg_glucose():
+    pd_values = get_values()
+    average = avg_glucose(pd_values.to_numpy())
+    assert 86.48 == average
+
+
+def test_std_deviation():
+    pd_values = get_values()
+    std = std_deviation(pd_values.to_numpy())
+    assert 11.90 == std
 
 
 
@@ -159,7 +186,7 @@ def get_date_values():
     ['8/15/2019 01:40:00',103],
     ['8/15/2019 01:45:00',108],
     ['8/15/2019 01:50:00',103],
-    ['8/15/2019 02:00:00',108]]
+    ['8/16/2019 02:00:00',108]]
 
     new_array =[]
     for i in values:
