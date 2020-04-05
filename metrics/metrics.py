@@ -15,17 +15,23 @@ def cv_of_glucose(bg_values):
     avg_glu = avg_glucose(bg_values)
     return round(std_dev/avg_glu * 100, 2)
 
-"""
-Still working on implementation
-def gmi(values):
-    mean_val = mean_glucose(values)
-    GMI( %) = 3.31 + 0.02392 x[mean glucose in mg / dL]
-    GMI(mmol / mol) = 12.71 + 4.70587 x[mean glucose in mmol / L]
-    #For example, if the SD is 50 mg/dl, and the average glucose is 150 mg/dl,
-# then you divide 50 by 150, multiply by 100, and you get a CV of 33%.
-"""
 
+def gmi(bg_values):
+    """
+        Calculate the average within a set of glucose values
 
+        Arguments:
+        values -- numpy array contains a list of bg values.
+
+        Output: Calculated Average
+
+        GMI(mmol / mol) = 12.71 + 4.70587 x[mean glucose in mmol / L]
+        GMI( %) = 3.31 + 0.02392 x[mean glucose in mg / dL]
+        #For example, if the SD is 50 mg/dl, and the average glucose is 150 mg/dl,
+        # then you divide 50 by 150, multiply by 100, and you get a CV of 33%.
+    """
+    gmi = 3.31 + (0.02392 * mean_glucose(bg_values))
+    return round(gmi, 2)
 
 def mean_glucose(bg_values):
     """

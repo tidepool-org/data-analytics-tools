@@ -1,9 +1,8 @@
 import pandas as pd
 import pytest
 from metrics.metrics import percent_values_by_range, percent_time_in_range, \
-    avg_glucose, std_deviation, cv_of_glucose
+    avg_glucose, std_deviation, cv_of_glucose, mean_glucose, gmi
 import datetime
-
 
 def test_calculation():
     pd_values = get_values()
@@ -41,6 +40,16 @@ def test_avg_glucose():
     pd_values = get_values()
     average = avg_glucose(pd_values.to_numpy())
     assert  average == 86.48 
+
+def test_gmi():
+    pd_values = get_values()
+    gmi_value = gmi(pd_values.to_numpy())
+    assert  gmi_value == 5.38
+
+def test_mean_glucose():
+    pd_values = get_values()
+    val = mean_glucose(pd_values.to_numpy())
+    assert val == 86.48
 
 def test_std_deviation():
     pd_values = get_values()
