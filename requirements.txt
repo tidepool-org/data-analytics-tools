@@ -1,0 +1,9 @@
+pandas==1.0.1
+pylint==2.2.2
+pytest==4.1.1
+pytest-cov==2.6.1
+twine==1.12.1
+xlrd==1.2.0
+numpy==1.18.1
+
+
