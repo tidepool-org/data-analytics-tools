@@ -1,4 +1,4 @@
-# tidals.py (<u>tid</u>epool-<u>da</u>ta-an<u>al</u>ysis too<u>ls</u>)
+# tidals
 This python package contains analysis tools and utility functions that
 may be helpful when loading, cleaning, and analyzing Tidepool data. This
 package is currently in development.

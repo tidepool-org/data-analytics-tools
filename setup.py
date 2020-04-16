@@ -14,19 +14,24 @@ import setuptools
 import os
 import glob
 import shutil
+import sys
 
+
+#validate python version
+if sys.version_info < (3, 6):
+    sys.exit("Sorry, Python < 3.6 is not supported")
 
 # %% START OF SETUP
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-version_string = "v0.0.1"
+version_string = "v0.0.4"
 
 setuptools.setup(
     name="tidals",
     version=version_string,
-    author="Ed Nykaza",
-    author_email="ed@tidepool.org",
+    author="Russ Wilson",
+    author_email="russ@tidepool.org",
     description="Tidepool Data Analysis Tools",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -35,18 +40,17 @@ setuptools.setup(
     download_url=(
         'https://github.com/tidepool-org/data-analytics-tools/tarball/' + version_string
     ),
+    setup_requires=['wheel'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD-2-Clause',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
+        'License :: OSI Approved :: BSD License',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
     install_requires=[
-          'numpy>=1.14.1',
-          'pandas>=0.23.1',
+          'numpy>=1.18.1',
+          'pandas>=1.0.1',
       ],
 )
 
