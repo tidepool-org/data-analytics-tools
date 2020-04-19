@@ -112,70 +112,33 @@ def get_percent_time_in_range(bg_values, lower_threshold: int, upper_threshold: 
     val_count = bg_df.count()
     return round(in_range/val_count*100, round_val)
 
-#todo:need to finish this and create test
-"""  
-def get_episodes(
-        df,
-        episode_criterion="cgm",
-        min_duration=5,
-):
-    # TODO: deal with case where there are nan's in the middle of an episode
-    # it probably makes sense to interpolate between values iff the gap is
-    # <= 1 to 6 points (5 to 30 minutes)
-    print("test")
-    # put consecutive data that matches in groups
-    df["tempGroups"] = ((
-        df[episode_criterion] != df[episode_criterion].shift()
-    ).cumsum())
 
-    df["episodeId"] = (
-        df["tempGroups"] * df[episode_criterion]
-    )
+def get_episodes(bg_values_df, episodes_threshold: int, min_ct_per_ep=3, min_duration=5, round_val=2):
+    """
+        Calculate the number of episodes for a given set of glucose values based on provided thresholds.
 
-    # group by the episode groups
-    episode_groups = df.groupby("episodeId")
-    episodes = episode_groups["roundedUtcTime"].count().reset_index()
-    episodes["duration"] = episodes["roundedUtcTime"] * 5
-    episodes.rename(columns={"roundedUtcTime": "episodeCounts"}, inplace=True)
+        Arguments:
+        bg_values -- Panda Dataframe with a column named values that contains a list of bg values and a column named date.
+        episodes_threshold -- The lower value blood glucose value considered in an episode.
+        min_ct_per_ep -- The minimum count of consecutive blood glucose values that defines an episode.
+        min_duration -- not implemented
+        round_val -- not implemented
 
-    df = pd.merge(df, episodes, on="episodeId", how="left")
-    df["episodeDuration"] = (
-        df["duration"] * df[episode_criterion]
-    )
-
-    # mark record as belonging to an episode
-    df["isEpisode"] = (
-        df["episodeDuration"] >= min_duration
-    )
-
-    # get the hypo episode starts so we only count each episode once
-    df["episodeStart"] = (
-        (df[episode_criterion])
-        & (~df[episode_criterion].shift(1).fillna(False))
-    )
-
-    # calculate the total duration and attach to start record
-    # which is needed to get the average duration per episode
-    df["episodeTotalDuration"] = (
-        df["episodeStart"] * df["episodeDuration"]
-    )
-    df["episodeTotalDuration"].replace(0, np.nan, inplace=True)
-
-    episode_prefix = (
-        "episode." + episode_criterion
-        + ".durationThreshold=" + str(min_duration) + "."
-    )
-
-    df = df[[
-        "isEpisode", "episodeId", "episodeStart", "episodeTotalDuration"
-    ]].add_prefix(episode_prefix)
-
-    return df
-"""
+        Output: Number of episodes.
+    """
+    bg_values_df.loc[(bg_values_df['values'] < episodes_threshold), 'episode'] = 1
+    bg_values_df.loc[(bg_values_df['values'] >= episodes_threshold), 'episode'] = 0
+    bg_values_df['group'] = 0
+    bg_values_df['group'][((bg_values_df.episode == 1) & (bg_values_df.episode.shift(1) == 0) &
+                           (bg_values_df.episode.shift(-1) == 1)& (bg_values_df.episode.shift(-(min_ct_per_ep-1)) == 1))] = 1
+    bg_values_df['group'][((bg_values_df.episode == 1) & (bg_values_df.index == 0) & (bg_values_df.episode.shift(-1) == 1)
+                           & (bg_values_df.episode.shift(-2) == 1))] = 1
+    group_sum = sum(bg_values_df.group)
+    return group_sum
 
 def get_bgri(bg_values, round_val=2):
     """
-            Calculate the LBGI, HBGI and BRGI within a set of glucose values
+            Calculate the LBGI, HBGI and BRGI within a set of glucose values from Clarke, W., & Kovatchev, B. (2009)
 
             Arguments:
             values -- numpy array contains a list of bg values.
@@ -183,10 +146,6 @@ def get_bgri(bg_values, round_val=2):
 
             Output: Calculated standard deviation
     """
-
-    # Calculate LBGI and HBGI using equation from
-    # Clarke, W., & Kovatchev, B. (2009)
-    ###bgs = bg_df.copy()
     bg_values[bg_values < 1] = 1  # this is added to take care of edge case BG <= 0
     transformed_bg = 1.509*((np.log(bg_values)**1.084)-5.381)
     risk_power = 10*(transformed_bg)**2
@@ -199,7 +158,6 @@ def get_bgri(bg_values, round_val=2):
     BGRI = round(LBGI + HBGI, round_val)
 
     return LBGI[0], HBGI[0], BGRI[0]
-
 
 def _validate_input(lower_threshold: int, upper_threshold: int) -> Tuple[int, int]:
     if any(num < 0 for num in [lower_threshold, upper_threshold]):

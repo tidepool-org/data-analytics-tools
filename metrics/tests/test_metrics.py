@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 from metrics.metrics import get_percent_values_by_range, get_percent_time_in_range, \
     get_avg_glucose, get_std_deviation, get_cv_of_glucose, get_mean_glucose, get_gmi, \
-    get_bgri
+    get_bgri, get_episodes
 import datetime
 
 
@@ -95,12 +95,18 @@ def test_get_bgri_round():
     assert HBGI == 0.0
     assert LBGI == 3.245
 
-"""
-def test_get_episodes():
+def test_get_episodes_3_consecutive():
     pd_values = get_date_ep_values()
-    std = get_episodes(pd_values)
-    assert std == 13.76
-"""
+    std = get_episodes(pd_values, 55, 3)
+    print("THE VALUE IS ", std)
+    assert std == 3
+
+def test_get_episodes_4_consecutive():
+    pd_values = get_date_ep_values()
+    std = get_episodes(pd_values, 55, 4)
+    print("THE VALUE IS ", std)
+    assert std == 1
+
 #100 values
 def get_values():
     values = [[100],
@@ -203,7 +209,6 @@ def get_values():
     [70],
     [60],
     [50]]
-
     return pd.DataFrame(values, columns=['bg_values'])
 
 def get_date_values():
@@ -229,8 +234,6 @@ def get_date_values():
     for i in values:
         date = datetime.datetime.strptime(i[0], '%m/%d/%Y %H:%M:%S')
         new_array.append([date, i[1]])
-
-
     return pd.DataFrame(new_array, columns=['date','bg_values'])
 
 def get_date_ep_values():
@@ -256,5 +259,32 @@ def get_date_ep_values():
     for i in values:
         date = datetime.datetime.strptime(i[0], '%m/%d/%Y %H:%M:%S')
         new_array.append([date, i[1]])
+    return pd.DataFrame(new_array, columns=['roundedUtcTime', 'values'])
 
-    return pd.DataFrame(new_array, columns=['roundedUtcTime', 'cgm'])
+def get_date_ep_values():
+    values = [['8/15/2019 00:40:00', 87],
+              ['8/15/2019 00:45:00', 90],
+              ['8/15/2019 00:50:00', 44],
+              ['8/15/2019 00:55:00', 46],
+              ['8/15/2019 01:00:00', 51],
+              ['8/15/2019 01:05:00', 97],
+              ['8/15/2019 01:10:00', 95],
+              ['8/15/2019 01:15:00', 100],
+              ['8/15/2019 01:20:00', 54],
+              ['8/15/2019 01:25:00', 101],
+              ['8/15/2019 01:30:00', 105],
+              ['8/15/2019 01:35:00', 80],
+              ['8/15/2019 01:40:00', 44],
+              ['8/15/2019 01:45:00', 43],
+              ['8/15/2019 01:50:00', 50],
+              ['8/15/2019 01:55:00', 104],
+              ['8/15/2019 02:00:00', 44],
+              ['8/15/2019 02:10:00', 43],
+              ['8/15/2019 02:15:00', 50],
+              ['8/15/2019 02:20:00', 50],
+              ['8/16/2019 02:25:00', 108]]
+    new_array = []
+    for i in values:
+        date = datetime.datetime.strptime(i[0], '%m/%d/%Y %H:%M:%S')
+        new_array.append([date, i[1]])
+    return pd.DataFrame(new_array, columns=['roundedUtcTime', 'values'])
